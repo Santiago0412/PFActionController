@@ -1,1 +1,1 @@
-This is a action view controller which is easy to use.
+This is a action view controller which is super easy to use.
