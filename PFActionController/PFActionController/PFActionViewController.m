@@ -244,7 +244,8 @@
     
     if (_systemStyleOn) {return;}
     
-    float halfWidth = [[UIScreen mainScreen] bounds].size.width/7;
+    float SystemWidth = [[UIScreen mainScreen] bounds].size.width > [[UIScreen mainScreen] bounds].size.height ? [[UIScreen mainScreen] bounds].size.height : [[UIScreen mainScreen] bounds].size.width;
+    float halfWidth = SystemWidth/7;
     float quarterWidth = halfWidth/2;
     float width = halfWidth*2;
     float labelWidth = 10;
