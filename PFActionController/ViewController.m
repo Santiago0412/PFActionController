@@ -36,7 +36,7 @@
         NSLog(@"wpf普通action3点击");
     }];
 
-    PFActionViewController *controller = [PFActionViewController normalActionControllerWithTitle:@"大萨达大萨" message:@"大萨达大萨达大萨达" contentView:view actions:@[action1,action2,action3] cancel:^{
+    PFActionViewController *controller = [PFActionViewController normalActionControllerWithTitle:@"标题" message:@"提示语" contentView:view actions:@[action1,action2,action3] cancel:^{
         NSLog(@"wpf normal action canceld");
     } style:PFActionViewControllerStyleWhite];
     
@@ -75,8 +75,23 @@
     PFImageAction *imageAction4 = [PFImageAction actionWithTitle:@"Calender" image:[UIImage imageNamed:@"test.jpg"] andHandler:^{
         NSLog(@"图片action4点击");
     }];
+    PFImageAction *imageAction5 = [PFImageAction actionWithTitle:@"Calender" image:[UIImage imageNamed:@"test.jpg"] andHandler:^{
+        NSLog(@"图片action4点击");
+    }];
+    PFImageAction *imageAction6 = [PFImageAction actionWithTitle:@"Calender" image:[UIImage imageNamed:@"test.jpg"] andHandler:^{
+        NSLog(@"图片action4点击");
+    }];
+    PFImageAction *imageAction7 = [PFImageAction actionWithTitle:@"Calender" image:[UIImage imageNamed:@"test.jpg"] andHandler:^{
+        NSLog(@"图片action4点击");
+    }];
+    PFImageAction *imageAction8 = [PFImageAction actionWithTitle:@"Calender" image:[UIImage imageNamed:@"test.jpg"] andHandler:^{
+        NSLog(@"图片action4点击");
+    }];
+    PFImageAction *imageAction9 = [PFImageAction actionWithTitle:@"Calender" image:[UIImage imageNamed:@"test.jpg"] andHandler:^{
+        NSLog(@"图片action4点击");
+    }];
     
-    PFActionViewController *controller = [PFActionViewController exportActionControllerWithTitle:@"标题" message:@"内容" contentView:view actions:@[action1,action2,action3] imageActions:@[imageAction1,imageAction2,imageAction3, imageAction4] cancel:^{
+    PFActionViewController *controller = [PFActionViewController exportActionControllerWithTitle:@"标题" message:@"提示语" contentView:view actions:@[action1,action2,action3] imageActions:@[imageAction1,imageAction2,imageAction3, imageAction4, imageAction5, imageAction6, imageAction7, imageAction8, imageAction9] cancel:^{
         NSLog(@"wpf expand action canceld");
     } style:PFActionViewControllerStyleBlack];
     

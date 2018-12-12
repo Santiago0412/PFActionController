@@ -12,8 +12,7 @@
 #import "UIView+PFActionController.h"
 @interface PFActionViewController ()<UIViewControllerTransitioningDelegate>
 
-@property (nonatomic, strong)UIView *topContainer;
-@property (nonatomic, strong)UIView *bottomContainer;
+@property (nonatomic, strong)UIScrollView *topContainer;
 @property (nonatomic, strong)NSString *topTitle;
 @property (nonatomic, strong)NSString *topMessage;
 @property (nonatomic, strong)UIView *contentView;
@@ -23,8 +22,10 @@
 @property (assign, nonatomic)PFActionViewControllerStyle colorStyle;
 @property (assign, nonatomic)ConfirmActionBlock cancelBlock;
 @property (strong, nonatomic)UIView *currentTopView;
-
+@property (strong, nonatomic)NSArray *topContainersTopMarginConstraint;
 @end
+
+static float contentHeight = 140.f;
 
 @implementation PFActionViewController
 
@@ -90,6 +91,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(changeRotate:) name:UIApplicationDidChangeStatusBarFrameNotification object:nil];
 }
 
 #pragma mark - Methods
@@ -110,11 +113,11 @@
     [self.view setBackgroundColor:[UIColor clearColor]];
     self.transitioningDelegate = self;
     
-    NSDictionary *metrics = @{@"seperatorHeight": @(1.f / [[UIScreen mainScreen] scale]), @"Margin": @([self marginForCurrentStyle])};
+    NSDictionary *metrics = @{@"seperatorHeight" : @(1.f / [[UIScreen mainScreen] scale]), @"Margin" : @([self marginForCurrentStyle])};
     
     [self setupCancel:metrics];
     [self setupTopContainer:metrics];
-    [self setupBottomBaseLine];
+    [self setupBottomBaseLine:metrics];
     [self setupImageActions];
     [self setupActions:metrics];
     [self setupContentView:metrics];
@@ -149,13 +152,14 @@
     
     NSDictionary *bindingsDict = @{@"headerTitleLabel":headerTitleLabel,@"currentTopView":self.currentTopView,@"seperator":seperator};
     
-    [self.topContainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(5)-[headerTitleLabel]-(5)-|" options:0 metrics:nil views:bindingsDict]];
+    [self.topContainer addConstraint:[NSLayoutConstraint constraintWithItem:self.topContainer attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:headerTitleLabel attribute:NSLayoutAttributeWidth multiplier:1 constant:0]];
+    
     
     if (_topMessage.length == 0 || _topMessage == nil){
-        [self.topContainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(0)-[seperator]-(0)-|" options:0 metrics:nil views:bindingsDict]];
+        [self.topContainer addConstraint:[NSLayoutConstraint constraintWithItem:self.topContainer attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:seperator attribute:NSLayoutAttributeWidth multiplier:1 constant:0]];
         [self.topContainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[headerTitleLabel]-(5)-[seperator(seperatorHeight)]-(0)-[currentTopView]" options:0 metrics:metrics views:bindingsDict]];
     }else{
-        [self.topContainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[headerTitleLabel]-(5)-[currentTopView]" options:0 metrics:metrics views:bindingsDict]];
+        [self.topContainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[headerTitleLabel(15)]-(5)-[currentTopView]" options:0 metrics:metrics views:bindingsDict]];
     }
     
     _currentTopView = headerTitleLabel;
@@ -179,9 +183,10 @@
     [self.topContainer addSubview:headerMessageLabel];
     
     NSDictionary *bindingsDict = @{@"headerMessageLabel":headerMessageLabel,@"currentTopView":_currentTopView,@"seperator":seperator};
-    [self.topContainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(5)-[headerMessageLabel]-(5)-|" options:0 metrics:nil views:bindingsDict]];
-    [self.topContainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(0)-[seperator]-(0)-|" options:0 metrics:nil views:bindingsDict]];
-    [self.topContainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[headerMessageLabel]-(5)-[seperator(seperatorHeight)]-(0)-[currentTopView]" options:0 metrics:metrics views:bindingsDict]];
+    [self.topContainer addConstraint:[NSLayoutConstraint constraintWithItem:self.topContainer attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:headerMessageLabel attribute:NSLayoutAttributeWidth multiplier:1 constant:0]];
+    [self.topContainer addConstraint:[NSLayoutConstraint constraintWithItem:self.topContainer attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:seperator attribute:NSLayoutAttributeWidth multiplier:1 constant:0]];
+    
+    [self.topContainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[headerMessageLabel(15)]-(5)-[seperator(seperatorHeight)]-(0)-[currentTopView]" options:0 metrics:metrics views:bindingsDict]];
     
     _currentTopView = headerMessageLabel;
 }
@@ -197,9 +202,10 @@
     self.contentView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.topContainer addSubview:self.contentView];
     [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[contentView(>=300)]" options:0 metrics:nil views:bindingsDict]];
-    [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[contentView(140)]" options:0 metrics:nil views:bindingsDict]];
-    [self.topContainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(0)-[contentView]-(0)-|" options:0 metrics:nil views:bindingsDict]];
-    [self.topContainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(0)-[seperator]-(0)-|" options:0 metrics:nil views:bindingsDict]];
+    [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[contentView(contentHeight)]" options:0 metrics:@{@"contentHeight":@(contentHeight)} views:bindingsDict]];
+    
+    [self.topContainer addConstraint:[NSLayoutConstraint constraintWithItem:self.topContainer attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:_contentView attribute:NSLayoutAttributeWidth multiplier:1 constant:0]];
+    [self.topContainer addConstraint:[NSLayoutConstraint constraintWithItem:self.topContainer attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:seperator attribute:NSLayoutAttributeWidth multiplier:1 constant:0]];
     [self.topContainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[contentView]-(0)-[seperator(seperatorHeight)]-(0)-[currentTopView]" options:0 metrics:metrics views:bindingsDict]];
     
     _currentTopView = _contentView;
@@ -221,9 +227,9 @@
         [item setTitleColor:[WEAKSELF getFontColor] forState:UIControlStateNormal];
         
         [WEAKSELF.topContainer addSubview:item];
-        [WEAKSELF.topContainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(0)-[item]-(0)-|" options:0 metrics:metrics views:NSDictionaryOfVariableBindings(item)]];
         [WEAKSELF.topContainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[item(height)]" options:0 metrics:@{@"height": @([WEAKSELF runningAtLeastiOS9] ? 55 : 44)} views:NSDictionaryOfVariableBindings(item)]];
-        
+        [WEAKSELF.topContainer addConstraint:[NSLayoutConstraint constraintWithItem:WEAKSELF.topContainer attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:item attribute:NSLayoutAttributeWidth multiplier:1 constant:0]];
+
         if (!WEAKSELF.systemStyleOn && idx == 0) {
             [item addTarget:WEAKSELF action:@selector(backgroundViewTapped) forControlEvents:UIControlEventTouchUpInside];
         }else{
@@ -233,7 +239,7 @@
         UIView *seperator = [UIView seperatorView];
         NSDictionary *bindingsDict = @{@"item":item,@"currentTopView":WEAKSELF.currentTopView,@"seperator":seperator};
         [WEAKSELF.topContainer addSubview:seperator];
-        [WEAKSELF.topContainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(0)-[seperator]-(0)-|" options:0 metrics:nil views:bindingsDict]];
+        [WEAKSELF.topContainer addConstraint:[NSLayoutConstraint constraintWithItem:WEAKSELF.topContainer attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:seperator attribute:NSLayoutAttributeWidth multiplier:1 constant:0]];
         [WEAKSELF.topContainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[item]-(0)-[seperator(seperatorHeight)]-(0)-[currentTopView]" options:0 metrics:metrics views:bindingsDict]];
         
         WEAKSELF.currentTopView = item;
@@ -248,9 +254,8 @@
     float halfWidth = SystemWidth/7;
     float quarterWidth = halfWidth/2;
     float width = halfWidth*2;
-    float labelWidth = 10;
     
-    NSDictionary *metrics = @{@"width":@(width),@"halfWidth":@(halfWidth),@"labelWidth":@(labelWidth),@"quarterWidth":@(quarterWidth)};
+    NSDictionary *metrics = @{@"width":@(width),@"halfWidth":@(halfWidth),@"quarterWidth":@(quarterWidth)};
     UIScrollView *bottomParentView = [[UIScrollView alloc] initWithFrame:CGRectZero];
     bottomParentView.translatesAutoresizingMaskIntoConstraints = NO;
     bottomParentView.showsVerticalScrollIndicator = NO;
@@ -258,7 +263,7 @@
     [bottomParentView setContentSize:CGSizeMake(width*_imageActionArray.count, width)];
     
     [self.topContainer addSubview:bottomParentView];
-    [self.topContainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(0)-[bottomParentView]-(0)-|" options:0 metrics:metrics views:NSDictionaryOfVariableBindings(bottomParentView)]];
+    [self.topContainer addConstraint:[NSLayoutConstraint constraintWithItem:self.topContainer attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:bottomParentView attribute:NSLayoutAttributeWidth multiplier:1 constant:0]];
     [self.topContainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[bottomParentView(width)]-(0)-|" options:0 metrics:metrics views:NSDictionaryOfVariableBindings(bottomParentView)]];
     
     __block UIView *currentRightView = nil;
@@ -307,27 +312,29 @@
     }];
     
     [bottomParentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[currentRightView]-(0)-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(currentRightView)]];
-    _currentTopView = bottomParentView;
+    self.currentTopView = bottomParentView;
 }
 
-- (void)setupBottomBaseLine {
+- (void)setupBottomBaseLine:(NSDictionary *)metrics {
     
     UIView *bottomBaseLine = [[UIView alloc] initWithFrame:CGRectZero];
     bottomBaseLine.translatesAutoresizingMaskIntoConstraints = NO;
     [bottomBaseLine setBackgroundColor:[UIColor clearColor]];
     [self.topContainer addSubview:bottomBaseLine];
-    [self.topContainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(0)-[bottomBaseLine]-(0)-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(bottomBaseLine)]];
+    [self.topContainer addConstraint:[NSLayoutConstraint constraintWithItem:self.topContainer attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:bottomBaseLine attribute:NSLayoutAttributeWidth multiplier:1 constant:0]];
     [self.topContainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[bottomBaseLine(0.1)]-(0)-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(bottomBaseLine)]];
-    _currentTopView = bottomBaseLine;
+    self.currentTopView = bottomBaseLine;
 }
 
 - (void)setupTopContainer:(NSDictionary *)metrics {
     
-    self.topContainer = [[UIView alloc] initWithFrame:CGRectZero];
+    self.topContainer = [[UIScrollView alloc] initWithFrame:CGRectZero];
     self.topContainer.layer.cornerRadius = [metrics[@"Margin"] floatValue];
     self.topContainer.clipsToBounds = YES;
     self.topContainer.translatesAutoresizingMaskIntoConstraints = NO;
     [self.topContainer setBackgroundColor:[self getBackgroundColor]];
+    self.topContainer.showsVerticalScrollIndicator = NO;
+    self.topContainer.showsHorizontalScrollIndicator = NO;
     
     [self.view addSubview:self.topContainer];
     
@@ -340,7 +347,7 @@
         
         [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[topContainer]-(Margin)-[currentTopView]" options:0 metrics:metrics views:bindingsDict]];
         [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(Margin)-[topContainer]-(Margin)-|" options:0 metrics:metrics views:bindingsDict]];
-    }else{
+    }else {
         
         UIView *bottomBaseViewForiPhoneX = [[UIView alloc] initWithFrame:CGRectZero];
         NSDictionary *bindingsDict = @{@"topContainer":self.topContainer,@"bottomBaseViewForiPhoneX":bottomBaseViewForiPhoneX};
@@ -387,7 +394,34 @@
     
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:cancel attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:bottomItem attribute:NSLayoutAttributeBottom multiplier:1 constant:-10]];
     
-    _currentTopView = cancel;
+    self.currentTopView = cancel;
+}
+
+- (float)getTopContainerHeight {
+
+    float topContainerHeight = 0.f;
+    float itemHeight = [self runningAtLeastiOS9] ? 55 : 44;
+    float speratorHeight =  1.f / [[UIScreen mainScreen] scale];
+    float SystemWidth = [[UIScreen mainScreen] bounds].size.width > [[UIScreen mainScreen] bounds].size.height ? [[UIScreen mainScreen] bounds].size.height : [[UIScreen mainScreen] bounds].size.width;
+    float imageActionHeight = SystemWidth*2/7;
+    
+    topContainerHeight = (itemHeight + speratorHeight) * [_actionArray count];
+    if (_contentView) {
+        topContainerHeight = topContainerHeight + contentHeight + speratorHeight;
+    }
+    
+    if (_topMessage) {
+        topContainerHeight = topContainerHeight + 20;
+    }
+    
+    topContainerHeight += 25;
+    
+    if (!_systemStyleOn) {
+        
+        topContainerHeight += imageActionHeight;
+    }
+    
+    return topContainerHeight;
 }
 
 - (void)dismissActionViewController {
@@ -395,8 +429,35 @@
 }
 
 - (void)setupTopContainersTopMarginConstraint {
-        self.view.translatesAutoresizingMaskIntoConstraints = NO;
-        [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(10)-[topContainer]" options:0 metrics:nil views:@{@"topContainer": self.topContainer}]];
+    
+    float topContainerHeight = [self getTopContainerHeight];
+    float maxEdge = [[UIScreen mainScreen] bounds].size.height;
+    
+    float systemTopContainerOffSetY;
+    float expandTopContainerOffSetY;
+    if ([[UIScreen mainScreen] bounds].size.height > [[UIScreen mainScreen] bounds].size.width) {
+        systemTopContainerOffSetY = 170;
+        expandTopContainerOffSetY = 100;
+    }else{
+        systemTopContainerOffSetY = 100;
+        expandTopContainerOffSetY = 30;
+    }
+    
+    float maxHeight = _systemStyleOn ? maxEdge - systemTopContainerOffSetY : maxEdge - expandTopContainerOffSetY;
+    
+    if (topContainerHeight > maxHeight) {
+        _topContainer.scrollEnabled = YES;
+        topContainerHeight = maxHeight;
+    }else{
+        _topContainer.scrollEnabled = NO;
+    }
+    
+    NSDictionary *metrics = @{@"topContainerHeight":@(topContainerHeight)};
+    
+    self.view.translatesAutoresizingMaskIntoConstraints = NO;
+    
+    self.topContainersTopMarginConstraint = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(0)-[topContainer(topContainerHeight)]" options:0 metrics:metrics views:@{@"topContainer": self.topContainer}];
+    [self.view addConstraints:_topContainersTopMarginConstraint];
 }
 
 - (BOOL)runningAtLeastiOS9 {
@@ -469,4 +530,20 @@
     animationController.transitionStyle = PFActionControllerTransitionStyleDismissing;
     return animationController;
 }
+
+#pragma mark - ChangeRotateNotificationMethod
+- (void)changeRotate:(NSNotification*)noti {
+    if ([[UIDevice currentDevice] orientation] == UIInterfaceOrientationPortrait || [[UIDevice currentDevice] orientation] == UIInterfaceOrientationPortraitUpsideDown) {
+        [self.view removeConstraints:_topContainersTopMarginConstraint];
+        [self setupTopContainersTopMarginConstraint];
+        [self.view setNeedsUpdateConstraints];
+        [self.view layoutIfNeeded];
+    } else {
+        [self.view removeConstraints:_topContainersTopMarginConstraint];
+        [self setupTopContainersTopMarginConstraint];
+        [self.view setNeedsUpdateConstraints];
+        [self.view layoutIfNeeded];
+    }
+}
+
 @end

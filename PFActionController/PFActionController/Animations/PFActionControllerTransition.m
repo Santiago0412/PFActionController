@@ -33,10 +33,8 @@
             return;
         }
         
-        
         [targetViewController setupTopContainersTopMarginConstraint];
         targetViewController.backgroundView.alpha = 0;
-    
         
         [containerView addSubview:targetViewController.backgroundView];
         [containerView addSubview:targetViewController.view];
@@ -58,6 +56,19 @@
         [containerView removeConstraint:targetViewController.yConstraint];
         targetViewController.yConstraint = [NSLayoutConstraint constraintWithItem:targetViewController.view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:containerView attribute:NSLayoutAttributeBottom multiplier:1 constant:0];
         [containerView addConstraint:targetViewController.yConstraint];
+        
+        [containerView addConstraint:[NSLayoutConstraint constraintWithItem:targetViewController.view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:containerView attribute:NSLayoutAttributeTop multiplier:1 constant:0]];
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
         [containerView setNeedsUpdateConstraints];
         
