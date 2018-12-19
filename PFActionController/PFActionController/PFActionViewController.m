@@ -439,8 +439,8 @@ static float contentHeight = 140.f;
         systemTopContainerOffSetY = 170;
         expandTopContainerOffSetY = 100;
     }else{
-        systemTopContainerOffSetY = 100;
-        expandTopContainerOffSetY = 30;
+        systemTopContainerOffSetY = 120;
+        expandTopContainerOffSetY = 50;
     }
     
     float maxHeight = _systemStyleOn ? maxEdge - systemTopContainerOffSetY : maxEdge - expandTopContainerOffSetY;
@@ -456,7 +456,7 @@ static float contentHeight = 140.f;
     
     self.view.translatesAutoresizingMaskIntoConstraints = NO;
     
-    self.topContainersTopMarginConstraint = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(0)-[topContainer(topContainerHeight)]" options:0 metrics:metrics views:@{@"topContainer": self.topContainer}];
+    self.topContainersTopMarginConstraint = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(>=0)-[topContainer(topContainerHeight)]" options:0 metrics:metrics views:@{@"topContainer": self.topContainer}];
     [self.view addConstraints:_topContainersTopMarginConstraint];
 }
 

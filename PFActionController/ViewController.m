@@ -35,8 +35,16 @@
     PFAction *action3 = [PFAction actionWithTitle:@"wpf普通action3" andHandler:^{
         NSLog(@"wpf普通action3点击");
     }];
+    
+    PFAction *action4 = [PFAction actionWithTitle:@"wpf普通action3" andHandler:^{
+        NSLog(@"wpf普通action3点击");
+    }];
+    
+    PFAction *action5 = [PFAction actionWithTitle:@"wpf普通action3" andHandler:^{
+        NSLog(@"wpf普通action3点击");
+    }];
 
-    PFActionViewController *controller = [PFActionViewController normalActionControllerWithTitle:@"标题" message:@"提示语" contentView:view actions:@[action1,action2,action3] cancel:^{
+    PFActionViewController *controller = [PFActionViewController normalActionControllerWithTitle:@"标题" message:@"提示语" contentView:view actions:@[action1,action2,action3,action4,action5] cancel:^{
         NSLog(@"wpf normal action canceld");
     } style:PFActionViewControllerStyleWhite];
     

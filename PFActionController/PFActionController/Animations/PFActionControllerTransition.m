@@ -58,18 +58,7 @@
         [containerView addConstraint:targetViewController.yConstraint];
         
         [containerView addConstraint:[NSLayoutConstraint constraintWithItem:targetViewController.view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:containerView attribute:NSLayoutAttributeTop multiplier:1 constant:0]];
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+   
         [containerView setNeedsUpdateConstraints];
         
         CGFloat damping = 1.0f;
