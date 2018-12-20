@@ -13,6 +13,7 @@ typedef void(^ActionHandlerBlock)(void);
 
 @interface PFAction : NSObject
 
+//the contentview height default is 240, if you set a frame, then your height will be used
 + (nullable instancetype)actionWithTitle:(nonnull NSString *)title view:(nullable UIView *)contentView andHandler:(ActionHandlerBlock)handler;
 
 @property (strong, nonatomic)NSString *title;
