@@ -10,6 +10,7 @@
 #import "PFActionViewController+Private.h"
 #import "PFActionControllerTransition.h"
 #import "UIView+PFActionController.h"
+//#import "UIButton+PFActionController.h"
 @interface PFActionViewController ()<UIViewControllerTransitioningDelegate>
 
 @property (nonatomic, strong)UIScrollView *topContainer;
@@ -23,9 +24,8 @@
 @property (assign, nonatomic)ConfirmActionBlock cancelBlock;
 @property (strong, nonatomic)UIView *currentTopView;
 @property (strong, nonatomic)NSArray *topContainersTopMarginConstraint;
+@property (assign, nonatomic)float contentHeight;
 @end
-
-static float contentHeight = 140.f;
 
 @implementation PFActionViewController
 
@@ -49,7 +49,7 @@ static float contentHeight = 140.f;
                                                    style:(PFActionViewControllerStyle)style {
     
     
-    PFAction *cancel = [PFAction actionWithTitle:@"Cancel" andHandler:^{
+    PFAction *cancel = [PFAction actionWithTitle:@"Cancel" view:nil andHandler:^{
         canceld();
     }];
     
@@ -83,6 +83,7 @@ static float contentHeight = 140.f;
         self.cancelBlock = canceld;
         self.colorStyle = style;
         self.systemStyleOn = systemStyleOn;
+        self.contentHeight = 140.f;
         [self setup];
     }
     
@@ -211,6 +212,8 @@ static float contentHeight = 140.f;
     
     if (!_contentView) return;
     
+    self.contentHeight = _contentView.frame.size.height > 0 ? _contentView.frame.size.height : _contentHeight;
+    
     UIView *seperator = [UIView seperatorView];
     [self.topContainer addSubview:seperator];
     
@@ -218,7 +221,7 @@ static float contentHeight = 140.f;
     self.contentView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.topContainer addSubview:self.contentView];
     [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[contentView(>=300)]" options:0 metrics:nil views:bindingsDict]];
-    [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[contentView(contentHeight)]" options:0 metrics:@{@"contentHeight":@(contentHeight)} views:bindingsDict]];
+    [self.contentView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[contentView(contentHeight)]" options:0 metrics:@{@"contentHeight":@(_contentHeight)} views:bindingsDict]];
     
     [self.topContainer addConstraint:[NSLayoutConstraint constraintWithItem:self.topContainer attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:_contentView attribute:NSLayoutAttributeWidth multiplier:1 constant:0]];
     [self.topContainer addConstraint:[NSLayoutConstraint constraintWithItem:self.topContainer attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:seperator attribute:NSLayoutAttributeWidth multiplier:1 constant:0]];
@@ -234,22 +237,56 @@ static float contentHeight = 140.f;
     __weak PFActionViewController *WEAKSELF = self;
     [self.actionArray enumerateObjectsUsingBlock:^(PFAction *action, NSUInteger idx, BOOL * _Nonnull stop) {
         
-        UIButton *item = [UIButton buttonWithType:UIButtonTypeSystem];
-        item.titleLabel.font = [UIFont boldSystemFontOfSize:[UIFont buttonFontSize]];
-        [item setTitleColor:[WEAKSELF getFontColor] forState:UIControlStateNormal];
-        [item setBackgroundColor:[UIColor clearColor]];
-        [item setTitle:action.title forState:UIControlStateNormal];
+        UIView *item = [[UIView alloc] init];
         item.translatesAutoresizingMaskIntoConstraints = NO;
-        [item setTitleColor:[WEAKSELF getFontColor] forState:UIControlStateNormal];
-        
         [WEAKSELF.topContainer addSubview:item];
-        [WEAKSELF.topContainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[item(height)]" options:0 metrics:@{@"height": @([WEAKSELF runningAtLeastiOS9] ? 55 : 44)} views:NSDictionaryOfVariableBindings(item)]];
-        [WEAKSELF.topContainer addConstraint:[NSLayoutConstraint constraintWithItem:WEAKSELF.topContainer attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:item attribute:NSLayoutAttributeWidth multiplier:1 constant:0]];
+        
+        float itemHeight = [WEAKSELF runningAtLeastiOS9] ? 55 : 44;
+        
+        if (action.contentView) {
+            itemHeight = action.contentView.frame.size.height > 0 ? action.contentView.frame.size.height : itemHeight;
 
+            action.contentView.translatesAutoresizingMaskIntoConstraints = NO;
+            [item addSubview:action.contentView];
+            [item addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(0)-[contentView]-(0)-|" options:0 metrics:nil views:@{@"contentView":action.contentView}]];
+            [item addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(0)-[contentView]-(0)-|" options:0 metrics:nil views:@{@"contentView":action.contentView}]];
+        }
+        
+        [WEAKSELF.topContainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[item(height)]" options:0 metrics:@{@"height": @(itemHeight)} views:NSDictionaryOfVariableBindings(item)]];
+        [WEAKSELF.topContainer addConstraint:[NSLayoutConstraint constraintWithItem:WEAKSELF.topContainer attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:item attribute:NSLayoutAttributeWidth multiplier:1 constant:0]];
+        
+        
+        
+        
+        
+        UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
+        button.translatesAutoresizingMaskIntoConstraints = NO;
+        button.titleLabel.font = [UIFont boldSystemFontOfSize:[UIFont buttonFontSize]];
+        [button setTitleColor:[WEAKSELF getFontColor] forState:UIControlStateNormal];
+        [button setBackgroundColor:[UIColor clearColor]];
+        [button setTitle:action.title forState:UIControlStateNormal];
+        
+        
+        
+        
+        
+        
+        
+        [item addSubview:button];
+        [item addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(0)-[button]-(0)-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(button)]];
+        [item addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(0)-[button]-(0)-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(button)]];
+        
+        
+        
+        
+        
+        
+        
+        
         if (!WEAKSELF.systemStyleOn && idx == 0) {
-            [item addTarget:WEAKSELF action:@selector(backgroundViewTapped) forControlEvents:UIControlEventTouchUpInside];
+            [button addTarget:WEAKSELF action:@selector(backgroundViewTapped) forControlEvents:UIControlEventTouchUpInside];
         }else{
-            [item addTarget:action action:@selector(performAction) forControlEvents:UIControlEventTouchUpInside];
+            [button addTarget:action action:@selector(performAction) forControlEvents:UIControlEventTouchUpInside];
         }
         
         UIView *seperator = [UIView seperatorView];
@@ -419,14 +456,24 @@ static float contentHeight = 140.f;
 - (float)getTopContainerHeight {
 
     float topContainerHeight = 0.f;
-    float itemHeight = [self runningAtLeastiOS9] ? 55 : 44;
+    
     float speratorHeight =  1.f / [[UIScreen mainScreen] scale];
     float SystemWidth = [[UIScreen mainScreen] bounds].size.width > [[UIScreen mainScreen] bounds].size.height ? [[UIScreen mainScreen] bounds].size.height : [[UIScreen mainScreen] bounds].size.width;
     float imageActionHeight = SystemWidth*2/7;
+
+    for (PFAction *action in _actionArray) {
     
-    topContainerHeight = (itemHeight + speratorHeight) * [_actionArray count];
+        float itemHeight = [self runningAtLeastiOS9] ? 55 : 44;
+        
+        if (action.contentView && action.contentView.frame.size.height > 0) {
+            itemHeight = action.contentView.frame.size.height;
+        }
+        
+        topContainerHeight = topContainerHeight + (itemHeight + speratorHeight);
+    }
+
     if (_contentView) {
-        topContainerHeight = topContainerHeight + contentHeight + speratorHeight;
+        topContainerHeight = topContainerHeight + _contentHeight + speratorHeight;
     }
     
     if (_topMessage) {

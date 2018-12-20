@@ -14,11 +14,12 @@
 
 @implementation PFAction
 
-+ (nullable instancetype)actionWithTitle:(nonnull NSString *)title andHandler:(ActionHandlerBlock)handler{
++ (nullable instancetype)actionWithTitle:(nonnull NSString *)title view:(nullable UIView *)contentView andHandler:(ActionHandlerBlock)handler{
     
     PFAction *action = [[[self class] alloc] init];
     action.title = title;
     action.actionHandler = handler;
+    action.contentView = contentView;
     return action;
 }
 

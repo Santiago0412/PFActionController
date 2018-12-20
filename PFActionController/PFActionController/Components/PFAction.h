@@ -7,15 +7,18 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 typedef void(^ActionHandlerBlock)(void);
 
 @interface PFAction : NSObject
 
-+ (nullable instancetype)actionWithTitle:(nonnull NSString *)title andHandler:(ActionHandlerBlock)handler;
++ (nullable instancetype)actionWithTitle:(nonnull NSString *)title view:(nullable UIView *)contentView andHandler:(ActionHandlerBlock)handler;
 
 @property (strong, nonatomic)NSString *title;
 @property (copy, nonatomic)ActionHandlerBlock actionHandler;
+@property (strong, nonatomic)UIView *contentView;
 
 - (void)performAction;
+
 @end

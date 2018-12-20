@@ -22,6 +22,7 @@ typedef NS_ENUM(NSInteger, PFActionViewControllerStyle) {
 @interface PFActionViewController : UIViewController <UIAppearanceContainer>
 
 //return a tableview style actioncontroller with a separate cancel button
+//the content view's height depend on user, if you have a content view without height, then the content view's height will be 140.f
 + (nullable instancetype)normalActionControllerWithTitle:(nonnull NSString *)title
                                                  message:(nullable NSString *)message
                                              contentView:(nullable UIView *)contentView
@@ -30,6 +31,7 @@ typedef NS_ENUM(NSInteger, PFActionViewControllerStyle) {
                                                    style:(PFActionViewControllerStyle)style;
 
 //return a tableview style actioncontroller and one cell include many items is scrollable
+//the content view's height depend on user, if you have a content view without height, then the content view's height will be 140.f
 + (nullable instancetype)exportActionControllerWithTitle:(nonnull NSString *)title
                                                  message:(nullable NSString *)message
                                              contentView:(nullable UIView *)contentView

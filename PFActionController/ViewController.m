@@ -21,27 +21,45 @@
 
 - (IBAction)showNormalActionController:(id)sender {
 
-    UIView *view = [[UIView alloc] init];
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 50)];
     [view setBackgroundColor:[UIColor whiteColor]];
     
-    PFAction *action1 = [PFAction actionWithTitle:@"wpf普通action1" andHandler:^{
+    
+    
+    UIView *cellView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 200)];
+    [cellView setBackgroundColor:[UIColor yellowColor]];
+    
+    UILabel *label = [[UILabel alloc] init];
+    label.translatesAutoresizingMaskIntoConstraints = NO;
+    [label setTextColor:[UIColor blackColor]];
+    [label setText:@"这是一个正经的label"];
+    [cellView addSubview:label];
+    [cellView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(0)-[label]-(0)-|" options:0 metrics:nil views:@{@"label":label}]];
+    [cellView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(0)-[label]-(0)-|" options:0 metrics:nil views:@{@"label":label}]];
+    
+    
+    
+    
+    
+    
+    PFAction *action1 = [PFAction actionWithTitle:@"sdaada1" view:nil andHandler:^{
         NSLog(@"wpf普通action1点击");
     }];
     
-    PFAction *action2 = [PFAction actionWithTitle:@"wpf普通action2" andHandler:^{
+    PFAction *action2 = [PFAction actionWithTitle:@"sdaada2" view:cellView andHandler:^{
         NSLog(@"wpf普通action2点击");
     }];
     
-    PFAction *action3 = [PFAction actionWithTitle:@"wpf普通action3" andHandler:^{
+    PFAction *action3 = [PFAction actionWithTitle:@"sdaada3" view:nil andHandler:^{
         NSLog(@"wpf普通action3点击");
     }];
     
-    PFAction *action4 = [PFAction actionWithTitle:@"wpf普通action3" andHandler:^{
-        NSLog(@"wpf普通action3点击");
+    PFAction *action4 = [PFAction actionWithTitle:@"sdaada4" view:nil andHandler:^{
+        NSLog(@"wpf普通action4点击");
     }];
     
-    PFAction *action5 = [PFAction actionWithTitle:@"wpf普通action3" andHandler:^{
-        NSLog(@"wpf普通action3点击");
+    PFAction *action5 = [PFAction actionWithTitle:@"sdaada5" view:nil andHandler:^{
+        NSLog(@"wpf普通action5点击");
     }];
 
     PFActionViewController *controller = [PFActionViewController normalActionControllerWithTitle:@"标题" message:@"提示语" contentView:view actions:@[action1,action2,action3,action4,action5] cancel:^{
@@ -56,16 +74,19 @@
     UIView *view = [[UIView alloc] init];
     [view setBackgroundColor:[UIColor redColor]];
     
-    PFAction *action1 = [PFAction actionWithTitle:@"wpf普通action1" andHandler:^{
+    UIView *test = [[UIView alloc] init];
+    [test setBackgroundColor:[UIColor yellowColor]];
+    
+    PFAction *action1 = [PFAction actionWithTitle:@"sdaada1" view:test andHandler:^{
         NSLog(@"wpf普通action1点击");
     }];
     
-    PFAction *action2 = [PFAction actionWithTitle:@"wpf普通action2" andHandler:^{
+    PFAction *action2 = [PFAction actionWithTitle:@"sdaada2" view:test andHandler:^{
         NSLog(@"wpf普通action2点击");
     }];
     
-    PFAction *action3 = [PFAction actionWithTitle:@"wpf普通action3" andHandler:^{
-        NSLog(@"wpf普通action3点击");
+    PFAction *action3 = [PFAction actionWithTitle:@"sdaada3" view:test andHandler:^{
+        NSLog(@"wpf普通actio2点击");
     }];
     
     PFImageAction *imageAction1 = [PFImageAction actionWithTitle:@"File" image:[UIImage imageNamed:@"test.jpg"] andHandler:^{

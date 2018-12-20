@@ -11,7 +11,7 @@
 @implementation PFImageAction
 + (nullable instancetype)actionWithTitle:(nonnull NSString *)title image:(UIImage *)image andHandler:(ActionHandlerBlock)handler{
     
-    PFImageAction *action = [[self class] actionWithTitle:title andHandler:handler];
+    PFImageAction *action = [[self class] actionWithTitle:title view:nil andHandler:handler];
     action.image = image;
     return action;
 }

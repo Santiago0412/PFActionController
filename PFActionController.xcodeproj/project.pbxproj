@@ -105,8 +105,8 @@
 		DE6DB86821BF8A68000803CC /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				DE6DB86921BF8A68000803CC /* UIView+PFActionController.m */,
 				DE6DB86D21BF8A68000803CC /* UIView+PFActionController.h */,
+				DE6DB86921BF8A68000803CC /* UIView+PFActionController.m */,
 				DE6DB87021BF8A68000803CC /* PFImageAction.h */,
 				DE6DB86B21BF8A68000803CC /* PFImageAction.m */,
 				DE6DB86C21BF8A68000803CC /* PFAction.h */,
