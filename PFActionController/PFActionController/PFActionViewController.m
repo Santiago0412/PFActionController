@@ -254,11 +254,7 @@
         
         [WEAKSELF.topContainer addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[item(height)]" options:0 metrics:@{@"height": @(itemHeight)} views:NSDictionaryOfVariableBindings(item)]];
         [WEAKSELF.topContainer addConstraint:[NSLayoutConstraint constraintWithItem:WEAKSELF.topContainer attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:item attribute:NSLayoutAttributeWidth multiplier:1 constant:0]];
-        
-        
-        
-        
-        
+
         UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
         button.translatesAutoresizingMaskIntoConstraints = NO;
         button.titleLabel.font = [UIFont boldSystemFontOfSize:[UIFont buttonFontSize]];
@@ -266,22 +262,9 @@
         [button setBackgroundColor:[UIColor clearColor]];
         [button setTitle:action.title forState:UIControlStateNormal];
         
-        
-        
-        
-        
-        
-        
         [item addSubview:button];
         [item addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(0)-[button]-(0)-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(button)]];
         [item addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(0)-[button]-(0)-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(button)]];
-        
-        
-        
-        
-        
-        
-        
         
         if (!WEAKSELF.systemStyleOn && idx == 0) {
             [button addTarget:WEAKSELF action:@selector(backgroundViewTapped) forControlEvents:UIControlEventTouchUpInside];
@@ -400,6 +383,7 @@
         
         [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[topContainer]-(Margin)-[currentTopView]" options:0 metrics:metrics views:bindingsDict]];
         [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[topContainer(width)]" options:0 metrics:metrics views:bindingsDict]];
+        [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.topContainer attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeCenterX multiplier:1 constant:0]];
     }else {
         
         UIView *bottomBaseViewForiPhoneX = [[UIView alloc] initWithFrame:CGRectZero];
@@ -416,8 +400,6 @@
             [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[topContainer]-(0)-|" options:0 metrics:metrics views:bindingsDict]];
         }
     }
-    
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.topContainer attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeCenterX multiplier:1 constant:0]];
 }
 
 - (void)setupCancel:(NSDictionary *)metrics {
