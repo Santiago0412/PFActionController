@@ -96,6 +96,10 @@ static float contentHeight = 140.f;
 }
 
 #pragma mark - Methods
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
+    [self backgroundViewTapped];
+}
+
 - (NSInteger)marginForCurrentStyle {
     
     if (self.systemStyleOn) {
@@ -456,6 +460,7 @@ static float contentHeight = 140.f;
     
     self.view.translatesAutoresizingMaskIntoConstraints = NO;
     
+    //why >=0 can't be deleted ???
     self.topContainersTopMarginConstraint = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(>=0)-[topContainer(topContainerHeight)]" options:0 metrics:metrics views:@{@"topContainer": self.topContainer}];
     [self.view addConstraints:_topContainersTopMarginConstraint];
 }
@@ -470,6 +475,7 @@ static float contentHeight = 140.f;
         _backgroundView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.4];
         _backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
         UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(backgroundViewTapped)];
+        [self.view addGestureRecognizer:tapRecognizer];
         [_backgroundView addGestureRecognizer:tapRecognizer];
     }
     
@@ -533,6 +539,7 @@ static float contentHeight = 140.f;
 
 #pragma mark - ChangeRotateNotificationMethod
 - (void)changeRotate:(NSNotification*)noti {
+    
     if ([[UIDevice currentDevice] orientation] == UIInterfaceOrientationPortrait || [[UIDevice currentDevice] orientation] == UIInterfaceOrientationPortraitUpsideDown) {
         [self.view removeConstraints:_topContainersTopMarginConstraint];
         [self setupTopContainersTopMarginConstraint];
