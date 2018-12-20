@@ -109,6 +109,18 @@ static float contentHeight = 140.f;
     }
 }
 
+- (CGFloat)actionSheetWidth {
+    
+    CGFloat screenWidth = [[UIScreen mainScreen] bounds].size.width;
+    CGFloat screenHeight = [[UIScreen mainScreen] bounds].size.height;
+    CGFloat minBounds = screenWidth < screenHeight ? screenWidth : screenHeight;
+    if (self.systemStyleOn) {
+        return minBounds - 2 * [self marginForCurrentStyle];
+    }else{
+        return screenWidth - 2 * [self marginForCurrentStyle];
+    }
+}
+
 - (void)setup {
     
     self.view.layer.masksToBounds = YES;
@@ -117,7 +129,7 @@ static float contentHeight = 140.f;
     [self.view setBackgroundColor:[UIColor clearColor]];
     self.transitioningDelegate = self;
     
-    NSDictionary *metrics = @{@"seperatorHeight" : @(1.f / [[UIScreen mainScreen] scale]), @"Margin" : @([self marginForCurrentStyle])};
+    NSDictionary *metrics = @{@"seperatorHeight" : @(1.f / [[UIScreen mainScreen] scale]), @"Margin" : @([self marginForCurrentStyle]), @"width":@([self actionSheetWidth])};
     
     [self setupCancel:metrics];
     [self setupTopContainer:metrics];
@@ -350,13 +362,12 @@ static float contentHeight = 140.f;
                                        };
         
         [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[topContainer]-(Margin)-[currentTopView]" options:0 metrics:metrics views:bindingsDict]];
-        [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(Margin)-[topContainer]-(Margin)-|" options:0 metrics:metrics views:bindingsDict]];
+        [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[topContainer(width)]" options:0 metrics:metrics views:bindingsDict]];
     }else {
         
         UIView *bottomBaseViewForiPhoneX = [[UIView alloc] initWithFrame:CGRectZero];
         NSDictionary *bindingsDict = @{@"topContainer":self.topContainer,@"bottomBaseViewForiPhoneX":bottomBaseViewForiPhoneX};
-        [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(Margin)-[topContainer]-(Margin)-|" options:0 metrics:metrics views:bindingsDict]];
-        
+        [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(0)-[topContainer]-(0)-|" options:0 metrics:metrics views:bindingsDict]];
         if(@available(iOS 11, *)) {
             bottomBaseViewForiPhoneX.translatesAutoresizingMaskIntoConstraints = NO;
             [bottomBaseViewForiPhoneX setBackgroundColor:[self getBackgroundColor]];
@@ -368,6 +379,8 @@ static float contentHeight = 140.f;
             [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[topContainer]-(0)-|" options:0 metrics:metrics views:bindingsDict]];
         }
     }
+    
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.topContainer attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeCenterX multiplier:1 constant:0]];
 }
 
 - (void)setupCancel:(NSDictionary *)metrics {
@@ -386,7 +399,9 @@ static float contentHeight = 140.f;
     
     [self.view addSubview:cancel];
     
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(Margin)-[cancel]-(Margin)-|" options:0 metrics:metrics views:NSDictionaryOfVariableBindings(cancel)]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[cancel(width)]" options:0 metrics:metrics views:NSDictionaryOfVariableBindings(cancel)]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:cancel attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeCenterX multiplier:1 constant:0]];
+    
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[cancel(height)]" options:0 metrics:@{@"height": @([self runningAtLeastiOS9] ? 55 : 44)} views:NSDictionaryOfVariableBindings(cancel)]];
     
     id bottomItem;
